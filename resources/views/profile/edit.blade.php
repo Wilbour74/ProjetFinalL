@@ -4,19 +4,19 @@
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Paramètres du profil</h1>
             
             <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow p-6 sm:p-8">
+                <div class="bg-gray-100 rounded-xl shadow p-6 sm:p-8 border border-gray-300">
                     <div class="max-w-2xl">
                         @include('profile.partials.update-profile-information-form')
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow p-6 sm:p-8">
+                <div class="bg-gray-100 rounded-xl shadow p-6 sm:p-8 border border-gray-300">
                     <div class="max-w-2xl">
                         @include('profile.partials.update-password-form')
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow p-6 sm:p-8">
+                <div class="bg-gray-100 rounded-xl shadow p-6 sm:p-8 border border-gray-300">
                     <div class="max-w-2xl">
                         @include('profile.partials.delete-user-form')
                     </div>

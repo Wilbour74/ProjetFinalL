@@ -4,10 +4,8 @@
 <div class="min-h-screen bg-gray-50 py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex gap-6">
-            {{-- COLONNE PRINCIPALE (GAUCHE) --}}
             <div class="flex-1 max-w-3xl space-y-6">
 
-        {{-- FORMULAIRE --}}
         <form action="{{ route('search.index') }}" method="GET" 
               class="flex items-center gap-2 bg-white p-3 rounded-xl shadow">
             
@@ -24,14 +22,12 @@
             </button>
         </form>
 
-        {{-- TITRE --}}
         @if($query !== '')
             <h1 class="text-lg font-semibold text-gray-700">
                 Résultats pour "<span class="text-indigo-600">{{ $query }}</span>"
             </h1>
         @endif
 
-        {{-- SECTION POSTS --}}
         @if($query !== '' && $posts->isNotEmpty())
             <div class="space-y-4">
                 <h2 class="text-xl font-semibold text-gray-800">Posts ({{ $posts->count() }})</h2>
@@ -44,7 +40,6 @@
                             @endif
 
                             <div class="flex items-center px-4 py-2 gap-3 w-full">
-                                <!-- Avatar -->
                                 <a href="{{ route('profile.show', $post->user->username) }}">
                                     <img
                                         src="{{ $post->user->avatar ? asset('storage/' . $post->user->avatar) : 'https://via.placeholder.com/48' }}"
@@ -75,13 +70,10 @@
                 
                 @foreach($users as $user)
                     <div class="bg-white rounded shadow p-4 flex items-center gap-4">
-                        <!-- Avatar -->
                         <img
                             src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://via.placeholder.com/64' }}"
                             alt="{{ $user->name }}"
                             class="w-16 h-16 rounded-full object-cover" />
-
-                        <!-- Informations du profil -->
                         <div class="flex-1">
                             <div class="flex flex-col">
                                 <h3 class="font-bold text-lg text-gray-900">{{ $user->name }}</h3>
@@ -92,7 +84,6 @@
                             </div>
                         </div>
 
-                        <!-- Lien vers le profil -->
                         <div>
                             <a href="{{ route('profile.show', $user->username) }}" class="text-indigo-600 hover:text-indigo-700 font-medium">
                                 Voir le profil
@@ -111,15 +102,12 @@
                 @foreach($comments as $comment)
                     <div class="mb-4 p-4 bg-gray-100 rounded shadow">
                         <div class="flex items-start mb-2 gap-3">
-                            <!-- Avatar -->
                             <a href="{{ route('profile.show', $comment->user->username) }}">
                                 <img
                                     src="{{ $comment->user->avatar ? asset('storage/' . $comment->user->avatar) : 'https://via.placeholder.com/48' }}"
                                     alt="{{ $comment->user->name }}"
                                     class="w-12 h-12 rounded-full object-cover hover:opacity-80 transition" />
                             </a>
-
-                            <!-- Nom + Username + Date -->
                             <div class="flex flex-col w-full">
                                 <div class="flex items-center justify-between">
                                     <a href="{{ route('profile.show', $comment->user->username) }}" class="flex flex-col hover:text-indigo-600 transition">
@@ -136,21 +124,18 @@
                             </div>
                         </div>
 
-                        <!-- Contenu du commentaire -->
                         <p class="text-gray-700">{!! parseContent($comment->content) !!}</p>
                     </div>
                 @endforeach
             </div>
         @endif
 
-        {{-- MESSAGE AUCUN RÉSULTAT --}}
         @if($query !== '' && $posts->isEmpty() && $comments->isEmpty() && $users->isEmpty())
             <p class="text-gray-500 text-center">Aucun résultat trouvé.</p>
         @endif
 
             </div>
 
-            {{-- COLONNE DES TAGS (DROITE) --}}
             <div class="w-64 flex-shrink-0">
                 <div class="bg-white rounded-xl shadow p-4 sticky top-4">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Tags populaires</h3>

@@ -64,7 +64,7 @@
                 file:text-sm file:font-semibold
                 file:bg-indigo-50 file:text-indigo-700
                 hover:file:bg-indigo-100"
-                required>
+                >
             <x-input-error :messages="$errors->get('avatar')" class="mt-2" />
         </div>
 

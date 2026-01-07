@@ -1,6 +1,6 @@
 <section class="space-y-6">
     <header class="mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h2 class="text-xl font-semibold text-black">
             {{ __('Supprimer le compte') }}
         </h2>
 
