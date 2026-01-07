@@ -20,7 +20,6 @@
 
                     <a href="{{ route('discussions.show', $discussion) }}" class="block border rounded-xl p-4 hover:bg-gray-50 transition flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <!-- Avatar rond -->
                             <img src="{{ $avatarUrl }}" alt="{{ $otherUser->name }}" class="w-12 h-12 rounded-full object-cover">
 
                             <div>
@@ -34,10 +33,6 @@
                                 @endif
                             </div>
                         </div>
-
-                        @if($lastMessage && !$lastMessage->read && $lastMessage->user_id != auth()->id())
-                            <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">Nouveau</span>
-                        @endif
                     </a>
                 @endforeach
             </div>

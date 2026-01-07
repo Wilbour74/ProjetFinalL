@@ -51,7 +51,7 @@ class Comment extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Comment::class, 'parent_id');
+        return $this->belongsTo(Comment::class, 'parent_id')->orderByDesc('created_at');;
     }
 
     public function tags()

@@ -60,6 +60,9 @@
                                 <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition">
                                     Se connecter
                                 </a>
+                                <a href="{{ route('posts.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-200 text-gray-800 rounded hover:bg-gray-200 transition">
+                                    Voir les posts
+                                </a>
                             @endauth
                         </div>
                     </div>

@@ -14,11 +14,15 @@ Route::get('/', function () {
 });
 
 Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit')->middleware('auth');
+Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update')->middleware('auth');
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 
 Route::get('/comments/{id}', [CommentController::class, 'show'])->name('comments.show');
 
 Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit')->middleware('auth');
+Route::put('/comments/{id}', [CommentController::class, 'update'])->name('comments.update')->middleware('auth');
 Route::post('/comments/{comment}', [CommentController::class, 'createReply'])->name('comments.reply');
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');

@@ -18,7 +18,6 @@
             </div>
         </div>
         
-        <!-- Messages -->
         <div class="flex-1 overflow-y-auto p-6 space-y-4">
 
             @foreach($messages as $message)
@@ -54,7 +53,6 @@
 
         </div>
 
-        <!-- Formulaire -->
         <form action="{{ route('messages.store', $discussion) }}" method="POST" class="p-4 border-t flex space-x-3">
             @csrf
             <input type="text" name="content" required

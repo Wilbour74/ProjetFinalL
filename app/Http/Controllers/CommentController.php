@@ -71,4 +71,52 @@ class CommentController extends Controller
 
         return redirect()->route('comments.show', $comment->id)->with('success', 'Commentaire publié !');
     }
+
+    /**
+     * Show the form for editing the specified comment.
+     */
+    public function edit(string $id)
+    {
+        $comment = Comment::findOrFail($id);
+        
+        if ($comment->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce commentaire.');
+        }
+        
+        return view('comments.edit', compact('comment'));
+    }
+
+    /**
+     * Update the specified comment in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $comment = Comment::findOrFail($id);
+        
+        if ($comment->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce commentaire.');
+        }
+        
+        $validated = $request->validate([
+            'content' => ['required', 'string', 'min:2', 'max:1000'],
+        ]);
+        
+        $comment->content = $validated['content'];
+        $comment->save();
+        
+        preg_match_all('/#(\w+)/u', $comment->content, $matches);
+        $tags = $matches[1];
+        
+        $comment->tags()->detach();
+        foreach ($tags as $tagName) {
+            $tag = Tag::firstOrCreate(['tag' => $tagName]);
+            $comment->tags()->attach($tag->id);
+        }
+        
+        if ($comment->parent_id) {
+            return redirect()->route('comments.show', $comment->parent_id)->with('success', 'Commentaire modifié avec succès !');
+        } else {
+            return redirect()->route('posts.show', $comment->post_id)->with('success', 'Commentaire modifié avec succès !');
+        }
+    }
 }

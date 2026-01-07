@@ -3,10 +3,8 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col items-center space-y-6">
 
-        <!-- Comment principal -->
         <div class="mb-6 p-6 bg-gray-100 rounded shadow w-full">
             <div class="flex items-start mb-2 gap-3">
-                <!-- Avatar -->
                 <a href="{{ route('profile.show', $comment->user->username) }}">
                     <img
                         src="{{ $comment->user->avatar ? asset('storage/' . $comment->user->avatar) : 'https://via.placeholder.com/48' }}"
@@ -14,7 +12,6 @@
                         class="w-12 h-12 rounded-full object-cover hover:opacity-80 transition" />
                 </a>
 
-                <!-- Nom + Username + Date + Bouton supprimer + Voir lien -->
                 <div class="flex flex-col w-full">
                     <div class="flex items-center justify-between">
                         <a href="{{ route('profile.show', $comment->user->username) }}" class="flex flex-col hover:text-indigo-600 transition">
@@ -30,50 +27,78 @@
                             <span class="text-sm text-gray-500">{{ $comment->created_at->format('d/m/Y H:i') }}</span>
 
                             @if(auth()->id() === $comment->user_id)
-                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Supprimer ce commentaire ?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700">
+                            <div class="flex gap-2">
+                                <a href="{{ route('comments.edit', $comment->id) }}" class="text-indigo-600 hover:text-indigo-700" title="Modifier">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M8 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V9z" clip-rule="evenodd" />
-                                        <path fill-rule="evenodd" d="M5 4a1 1 0 011-1h8a1 1 0 011 1v1H5V4z" clip-rule="evenodd" />
-                                        <path d="M4 7h12v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                </button>
-                            </form>
+                                </a>
+                                <form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700" title="Supprimer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V9z" clip-rule="evenodd" />
+                                            <path fill-rule="evenodd" d="M5 4a1 1 0 011-1h8a1 1 0 011 1v1H5V4z" clip-rule="evenodd" />
+                                            <path d="M4 7h12v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                             @endif
                         </div>
                     </div>
 
-                    <!-- Contenu du commentaire -->
+
                     <p class="text-gray-700 mt-2">{!! parseContent($comment->content) !!}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Formulaire pour répondre -->
         <div class="w-full mb-6">
             <h2 class="text-xl font-semibold mb-4">Répondre à ce commentaire</h2>
-            <form action="{{ route('comments.reply', $comment) }}" method="POST" class="flex flex-col gap-4">
-                @csrf
-                <input type="hidden" name="post_id" value="{{ $comment->post_id }}">
-                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                <textarea
-                    name="content"
-                    rows="3"
-                    class="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
-                    placeholder="Écrire une réponse..."
-                    required>{{ old('content') }}</textarea>
-                <x-input-error :messages="$errors->get('content')" class="text-sm text-red-500" />
-                <div class="flex justify-end">
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                        Répondre
-                    </button>
+
+            @auth
+                <form action="{{ route('comments.reply', $comment) }}" method="POST" class="flex flex-col gap-4">
+                    @csrf
+                    <input type="hidden" name="post_id" value="{{ $comment->post_id }}">
+                    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                    <textarea
+                        name="content"
+                        rows="3"
+                        class="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
+                        placeholder="Écrire une réponse..."
+                        required>{{ old('content') }}</textarea>
+                    <x-input-error :messages="$errors->get('content')" class="text-sm text-red-500" />
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+                            Répondre
+                        </button>
+                    </div>
+                </form>
+            @endauth
+
+            @guest
+                <div class="bg-white p-4 rounded border border-gray-200 flex flex-col items-center text-center gap-3">
+                    <p class="text-gray-700">
+                        Connecte-toi ou crée un compte pour pouvoir répondre à ce commentaire.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="{{ route('login') }}"
+                           class="px-5 py-2 rounded-lg border border-gray-300 text-gray-800 bg-white hover:bg-gray-50 transition">
+                            Connexion
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                               class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                                Inscription
+                            </a>
+                        @endif
+                    </div>
                 </div>
-            </form>
+            @endguest
         </div>
 
-        <!-- Réponses / Replies -->
         @if($comment->replies->count())
         <div class="space-y-4 w-full ml-8">
             <h2 class="text-xl font-semibold mb-4 text-center">
@@ -99,20 +124,24 @@
                             </a>
                             <div class="flex items-center gap-2">
                                 @if(auth()->id() === $reply->user_id)
-                                <!-- Formulaire suppression -->
-                                <form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Supprimer ce commentaire ?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">
-                                        <!-- Heroicons Trash -->
+                                <div class="flex gap-2">
+                                    <a href="{{ route('comments.edit', $reply->id) }}" class="text-indigo-600 hover:text-indigo-700" title="Modifier">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M8 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V9z" clip-rule="evenodd" />
-                                            <path fill-rule="evenodd" d="M5 4a1 1 0 011-1h8a1 1 0 011 1v1H5V4z" clip-rule="evenodd" />
-                                            <path d="M4 7h12v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                         </svg>
-                                    </button>
-                                </form>
-
+                                    </a>
+                                    <form action="{{ route('comments.destroy', $reply) }}" method="POST" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Supprimer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M8 9a1 1 0 012 0v6a1 1 0 11-2 0V9zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V9z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M5 4a1 1 0 011-1h8a1 1 0 011 1v1H5V4z" clip-rule="evenodd" />
+                                                <path d="M4 7h12v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
                                 @endif
                             </div>
                             <span class="text-sm text-gray-500">{{ $reply->created_at->format('d/m/Y H:i') }}</span>

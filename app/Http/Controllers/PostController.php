@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -79,7 +80,14 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        
+        // Vérifier que l'utilisateur est le propriétaire
+        if ($post->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce post.');
+        }
+        
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -87,7 +95,40 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        
+        if ($post->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce post.');
+        }
+        
+        $validated = $request->validate([
+            'content' => ['min:2', 'max:15000'],
+            'title' => ['required', 'string', 'min:2', 'max:1000'],
+            'image' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048']
+        ]);
+        
+        $post->title = $validated['title'];
+        $post->content = $validated['content'];
+        
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+            $post->image = $imagePath;
+        }
+        
+        $post->save();
+
+        preg_match_all('/#(\w+)/u', $post->content, $matches);
+        $tags = $matches[1];
+        
+        $post->tags()->detach();
+        foreach ($tags as $tagName) {
+            $tag = Tag::firstOrCreate(['tag' => $tagName]);
+            $post->tags()->attach($tag->id);
+        }
+        
+        return redirect()
+            ->route('posts.show', $post->id)
+            ->with('success', 'Post modifié avec succès !');
     }
 
     /**
