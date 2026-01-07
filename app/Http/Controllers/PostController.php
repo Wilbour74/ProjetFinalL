@@ -130,7 +130,7 @@ class PostController extends Controller
         }
         
         return redirect()
-            ->route('posts.show', $post->id)
+            ->route('posts.index')
             ->with('success', 'Post modifié avec succès !');
     }
 

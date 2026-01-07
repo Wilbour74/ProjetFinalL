@@ -19,12 +19,10 @@ class SearchController extends Controller
         $users = collect();
 
         if ($query !== '') {
-            // Vérifier si la requête commence par #
             $isTagSearch = str_starts_with($query, '#');
             $searchTerm = $isTagSearch ? ltrim($query, '#') : $query;
 
             if ($isTagSearch) {
-                // Recherche uniquement par tags
                 $tags = Tag::whereRaw('LOWER(tag) LIKE ?', ['%' . strtolower($searchTerm) . '%'])->get();
                 
                 $postIds = collect();
@@ -35,7 +33,6 @@ class SearchController extends Controller
                     $commentIds = $commentIds->merge($tag->comments()->get()->pluck('id'));
                 }
 
-                // Récupérer les posts
                 if ($postIds->isNotEmpty()) {
                     $posts = Post::whereIn('id', $postIds->unique())
                         ->with('user')
@@ -43,7 +40,6 @@ class SearchController extends Controller
                         ->get();
                 }
 
-                // Récupérer les commentaires
                 if ($commentIds->isNotEmpty()) {
                     $comments = Comment::whereIn('id', $commentIds->unique())
                         ->with('user')
@@ -51,7 +47,6 @@ class SearchController extends Controller
                         ->get();
                 }
             } else {
-                // Recherche de profils (nom, username, email)
                 $users = User::where(function($q) use ($searchTerm) {
                     $q->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
                       ->orWhereRaw('LOWER(username) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
@@ -59,23 +54,18 @@ class SearchController extends Controller
                 })
                 ->orderBy('name', 'asc')
                 ->get();
-                // Recherche dans le contenu ET dans les tags
-                
-                // 1. Recherche dans le contenu des posts
+
                 $postsByContent = Post::search($searchTerm)->get();
                 $postIdsFromContent = $postsByContent->pluck('id');
-
-                // 2. Recherche dans les tags pour les posts
+                
                 $tags = Tag::whereRaw('LOWER(tag) LIKE ?', ['%' . strtolower($searchTerm) . '%'])->get();
                 $postIdsFromTags = collect();
                 foreach ($tags as $tag) {
                     $postIdsFromTags = $postIdsFromTags->merge($tag->posts()->get()->pluck('id'));
                 }
 
-                // Fusionner les IDs de posts (contenu + tags)
                 $allPostIds = $postIdsFromContent->merge($postIdsFromTags)->unique();
 
-                // Récupérer les posts
                 if ($allPostIds->isNotEmpty()) {
                     $posts = Post::whereIn('id', $allPostIds)
                         ->with('user')
@@ -83,20 +73,16 @@ class SearchController extends Controller
                         ->get();
                 }
 
-                // 3. Recherche dans le contenu des commentaires
                 $commentsByContent = Comment::search($searchTerm)->get();
                 $commentIdsFromContent = $commentsByContent->pluck('id');
 
-                // 4. Recherche dans les tags pour les commentaires
                 $commentIdsFromTags = collect();
                 foreach ($tags as $tag) {
                     $commentIdsFromTags = $commentIdsFromTags->merge($tag->comments()->get()->pluck('id'));
                 }
 
-                // Fusionner les IDs de commentaires (contenu + tags)
                 $allCommentIds = $commentIdsFromContent->merge($commentIdsFromTags)->unique();
 
-                // Récupérer les commentaires
                 if ($allCommentIds->isNotEmpty()) {
                     $comments = Comment::whereIn('id', $allCommentIds)
                         ->with('user')
@@ -106,7 +92,6 @@ class SearchController extends Controller
             }
         }
 
-        // Récupérer tous les tags avec leur nombre d'occurrences
         $allTags = Tag::withCount(['posts', 'comments'])
             ->get()
             ->map(function ($tag) {
