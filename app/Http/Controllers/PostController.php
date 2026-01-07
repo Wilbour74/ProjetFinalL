@@ -40,12 +40,16 @@ class PostController extends Controller
         $validated = $request->validate([
             'content' => ['min:2', 'max:15000'],
             'title' => ['required', 'string', 'min:2', 'max:1000'],
-            'image' => ['required', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048']
+            'image' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048']
         ]);
-        
-        $imagePath = $request->file('image')->store('images', 'public');
+
         $post = new Post($validated);
-        $post->image = $imagePath;
+        
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+            $post->image = $imagePath;
+        }
+        
         $post->user_id = $user->id;
         $post->save();
 
@@ -55,7 +59,7 @@ class PostController extends Controller
 
         foreach ($tags as $tagName) {
             $tag = Tag::firstOrCreate(['tag' => $tagName]);
-            $post->tags()->syncWithoutDetaching($tag->id);
+            $post->tags()->attach($tag->id);
         }
 
         return redirect()
@@ -82,7 +86,6 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
         
-        // Vérifier que l'utilisateur est le propriétaire
         if ($post->user_id !== Auth::id()) {
             abort(403, 'Vous n\'êtes pas autorisé à modifier ce post.');
         }

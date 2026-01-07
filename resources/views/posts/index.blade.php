@@ -17,6 +17,7 @@
                         <h2 class="text-xl font-semibold mb-4">Ajouter un nouveau post</h2>
                         <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
                             @csrf
+                            <label>Nom du poste</label>
                             <input
                                 type="text"
                                 name="title"
@@ -24,12 +25,15 @@
                                 value="{{ old('title') }}"
                                 class="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                                 required />
+                            
+                            <label>Contenu</label>
                             <textarea
                                 name="content"
                                 rows="3"
                                 placeholder="Contenu du post"
                                 class="w-full p-3 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
                                 required>{{ old('content') }}</textarea>
+                            <label>Image (facultative)</label>
                             <input
                                 type="file"
                                 name="image"
